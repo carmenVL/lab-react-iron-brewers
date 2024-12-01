@@ -1,24 +1,27 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios"; // Importa axios
 import Search from "../components/Search";
-import beersJSON from "./../assets/beers.json";
-
-
 
 function AllBeersPage() {
-  // Mock initial state, to be replaced by data from the API. Once you retrieve the list of beers from the Beers API store it in this state variable.
-  const [beers, setBeers] = useState(beersJSON);
+  // Inicializar el estado para las cervezas
+  const [beers, setBeers] = useState([]);
 
+  // Usar useEffect para hacer la solicitud a la API
+  useEffect(() => {
+    // Hacer la solicitud GET a la API de cervezas
+    axios
+      .get("https://ih-beers-api2.herokuapp.com/beers")
+      .then((response) => {
+        // Actualizar el estado con los datos de la API
+        setBeers(response.data);
+      })
+      .catch((error) => {
+        // Manejar errores en la solicitud
+        console.error("Error fetching beers:", error);
+      });
+  }, []); // El array vacío asegura que solo se haga una vez al montar el componente
 
-
-  // TASKS:
-  // 1. Set up an effect hook to make a request to the Beers API and get a list with all the beers.
-  // 2. Use axios to make a HTTP request.
-  // 3. Use the response data from the Beers API to update the state variable.
-
-
-
-  // The logic and the structure for the page showing the list of beers. You can leave this as it is for now.
   return (
     <>
       <Search />
@@ -29,7 +32,10 @@ function AllBeersPage() {
             return (
               <div key={i}>
                 <Link to={"/beers/" + beer._id}>
-                  <div className="card m-2 p-2 text-center" style={{ width: "24rem", height: "18rem" }}>
+                  <div
+                    className="card m-2 p-2 text-center"
+                    style={{ width: "24rem", height: "18rem" }}
+                  >
                     <div className="card-body">
                       <img
                         src={beer.image_url}

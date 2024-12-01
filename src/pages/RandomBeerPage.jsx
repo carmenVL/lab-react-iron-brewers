@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import beersJSON from "./../assets/beers.json";
 
 
+
 function RandomBeersPage() {
   // Mock initial state, to be replaced by data from the Beers API. Store the beer info retrieved from the Beers API in this state variable.
   const [randomBeer, setRandomBeer] = useState(beersJSON[0]);

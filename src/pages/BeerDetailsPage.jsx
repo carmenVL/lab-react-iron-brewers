@@ -1,26 +1,46 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import beersJSON from "./../assets/beers.json";
-
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function BeerDetailsPage() {
-  // Mock initial state, to be replaced by data from the Beers API. Store the beer info retrieved from the Beers API in this state variable.
-  const [beer, setBeer] = useState(beersJSON[0]);
+  // Estado para almacenar los detalles de la cerveza
+  const [beer, setBeer] = useState(null);
+  const [loading, setLoading] = useState(true); // Estado para mostrar el cargando
+  const [error, setError] = useState(null); // Estado para manejar errores
 
-  // React Router hook for navigation. We use it for the back button. You can leave this as it is.
+  // Obtener el beerId desde la URL
+  const { beerId } = useParams();
+
+  // React Router hook para navegación (botón de "Back")
   const navigate = useNavigate();
 
+  // Usar useEffect para hacer la solicitud GET cuando el componente se monte
+  useEffect(() => {
+    // Realizar la solicitud GET para obtener los detalles de la cerveza
+    axios
+      .get(`https://ih-beers-api2.herokuapp.com/beers/${beerId}`)
+      .then((response) => {
+        // Guardar los detalles de la cerveza en el estado
+        setBeer(response.data);
+        setLoading(false); // Cambiar el estado de carga a false una vez obtenidos los datos
+      })
+      .catch((error) => {
+        // Manejar errores
+        setError("Error fetching beer details.");
+        setLoading(false);
+      });
+  }, [beerId]); // El efecto se vuelve a ejecutar si cambia el beerId
 
+  // Mostrar un mensaje de carga mientras los datos se obtienen
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-  // TASKS:
-  // 1. Get the beer ID from the URL, using the useParams hook.
-  // 2. Set up an effect hook to make a request for the beer info from the Beers API.
-  // 3. Use axios to make a HTTP request.
-  // 4. Use the response data from the Beers API to update the state variable.
+  // Si ocurre un error, mostrar el mensaje de error
+  if (error) {
+    return <div>{error}</div>;
+  }
 
-
-
-  // Structure and the content of the page showing the beer details. You can leave this as it is:
   return (
     <div className="d-inline-flex flex-column justify-content-center align-items-center w-100 p-4">
       {beer && (
@@ -40,7 +60,7 @@ function BeerDetailsPage() {
           <button
             className="btn btn-primary"
             onClick={() => {
-              navigate(-1);
+              navigate(-1); // Navegar hacia atrás
             }}
           >
             Back
